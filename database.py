@@ -1,8 +1,10 @@
 import datetime
 import TablePrint
+from passlib.hash import pbkdf2_sha256
 BudgetTotal = 100
 CurrentUser = "admin"
 PurchaseDatabase = {}
+UserDatabase = {}
 
 class PurchaseObj:
     def __init__(self, user, amount, item, count, purpose, date):
@@ -15,6 +17,39 @@ class PurchaseObj:
     def printObj(self):
         print(self.user)
 
+class user:
+    def __init__(self, name, password, permissions)
+        self.name = name
+        self.password = password
+        self.permissions = permissions
+
+#TODO Stop the ability to add multiple users of same name
+def AddUser():
+    tmpPerms = input('What permission level would you like?: ')
+    tmpName = input('Enter Username: ')
+    tmpPass = input('Input a password: ')
+    if tmpPass == input('Please Verify your password: ')
+        UserDatabase[len(UserDatabase)] = user(tmpName, pbkdf2_sha256.hash(tmpPass), tmpPerms)
+        print('User added successfully')
+        tmpPerms = None
+        tmpName = None
+        tmpPass = None
+        main()
+    else:
+        print("Incorrect Password, please try again")
+        tmpPerms = None
+        tmpName = None
+        tmpPass = None
+        AddUser()
+
+def ChangeUser():
+    tmpUser = input('What user would you like to log in: ')
+    for k, v in UserDatabase:
+        if v.name == tmpUser:
+            if pbkdf2_sha256.verify(input('Please enter the password: ') == True:
+                    CurrentUser = v.name
+                    print('User changed successfully')
+
 def addPurchase():
     global BudgetTotal, CurrentUser, PurchaseDatabase
     print("\nThe current budget balance is " + str(BudgetTotal))
@@ -23,8 +58,7 @@ def addPurchase():
     item = input("What was the money spent on? ")
     count = input("How many items were purchased? ")
     purpose = input("Detail the purpose for the purchase: ")
-    date = datetime.datetime.now().strftime('%d-%m-%Y %H:%M:%S')
-
+    date = datetime.datetime.now().strftime('%d-%m-%Y %H:%M:%S') 
     print("\nComplete the following purchase?")
     print("User: " + CurrentUser)
     print("Amount spent: " + str(amount))
@@ -58,11 +92,14 @@ def main():
     print("What would you like to do?")
     print("1: View Database")
     print("2: Add a new purchase")
+    print('3: Add a new User')
     MenuChoice = input('> ')
     if str(MenuChoice) == '1':
         printDatabase()
     if str(MenuChoice) == '2':
         addPurchase()
+    if str(MenuChoice) == '3':
+        AddUser()
     else:
         main()
 main()
