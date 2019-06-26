@@ -85,18 +85,26 @@ def printDatabase():
     DatabaseTable = []
     print('1: Date')
     print('2: Price')
+    print('3: Count')
     SortChoice = input('what would you like to sort by? ')
     if str(SortChoice) == '1':
         for k, v in PurchaseDatabase.items():
             DatabaseTable.append([str(v.user), str(v.amount), str(v.item), str(v.purpose), str(v.count), str(v.date)])
     
     if str(SortChoice) == '2':
-        highestcost = 0
         for k, v in PurchaseDatabase.items():
             DatabaseTable.append([str(v.user), str(v.amount), str(v.item), str(v.purpose), str(v.count), str(v.date)])
             for counter, item in enumerate(DatabaseTable):
-                if int(DatabaseTable[counter][1]) > int(DatabaseTable[counter - 1][1]):
+                if int(DatabaseTable[counter][1]) >= int(DatabaseTable[counter - 1][1]):
                     DatabaseTable.insert(0, DatabaseTable.pop(counter))
+    if str(SortChoice) == '3':
+        for k, v in PurchaseDatabase.items():
+            DatabaseTable.append([str(v.user), str(v.amount), str(v.item), str(v.purpose), str(v.count), str(v.date)])
+            for counter, item in enumerate(DatabaseTable):
+                if int(DatabaseTable[counter][4]) >= int(DatabaseTable[counter - 1][4]):
+                    DatabaseTable.insert(0, DatabaseTable.pop(counter))
+                else:
+                    #TODO
     DatabaseTable.insert(0, ['User', 'Amount Spent', 'Item name', 'Reason for Purchase', 'Item Count', 'Purchase Date'])
     TablePrint.table(*DatabaseTable)
     print('')
