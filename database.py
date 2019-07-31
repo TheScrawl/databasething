@@ -3,6 +3,7 @@ from datetime import datetime
 import TablePrint
 from operator import itemgetter
 from passlib.hash import pbkdf2_sha256
+import os
 BudgetTotal = 100
 CurrentPermissions = 4
 PurchaseDatabase = {}
@@ -42,6 +43,7 @@ def AddUser():
     tmpPerms = None
     tmpName = None
     tmpPass = None
+    os.system('clear')
     # get temp vars to use for user generation
     tmpPerms = input('What permission level would you like?: ') 
     try:
@@ -55,44 +57,54 @@ def AddUser():
     tmpName = input('Enter Username: ')
     for k, v in UserDatabase.items():
         if v.name == tmpName:
-            print("user under that name already exists, returning to main menu")
+            os.system('clear')
+            print("user under that name already exists, returning to main menu\n")
             main()
     tmpPass = input('Input a password: ')
     if tmpPass == input('Please Verify your password: '):
         UserDatabase[len(UserDatabase)] = user(tmpName, pbkdf2_sha256.hash(tmpPass), tmpPerms) #Creates user from tmp variables, encrypting pass with sha256
-        print('User added successfully')
+        os.system('clear')
+        print('User added successfully\n')
         main()
     else: # If password wrong, reset temp vars and rerun
+        os.system('clear')
         print("Incorrect Password, please try again")
         AddUser()
 
 def ChangeUser():
     global CurrentUser, CurrentPermissions, UserDatabase
+    os.system('clear')
     tmpUser = input('What user would you like to log in: ')
     for k, v in UserDatabase.items():
         if v.name == tmpUser: #Make sure user exists
             if pbkdf2_sha256.verify(input('Please enter the password: '), v.password) == True: #check password
                     CurrentUser = v.name #Change current user to new user
                     CurrentPermissions = v.permissions
-                    print('User changed successfully')
+                    os.system('clear')
+                    print('User changed successfully\n')
                     main()
             else:
+                os.system('clear')
                 print('Incorrect Password')
                 ChangeUser()
-    print("User does not exist")
+    os.system('clear')
+    print("User does not exist\n")
+    main()
 
 def addPurchase():
     global BudgetTotal, CurrentUser, PurchaseDatabase
-    print("\nThe current budget balance is " + str(BudgetTotal))
+    os.system('clear')
+    print("The current budget balance is " + str(BudgetTotal))
     #Take inputs and calculate other vars
     amount = int(input("Input amount spent: "))
     TempBudget = BudgetTotal - amount
     item = input("What was the money spent on? ")
     count = input("How many items were purchased? ")
     purpose = input("Detail the purpose for the purchase: ")
-    date = datetime.datetime.now().strftime('%Y-%m-%d') 
+    date = datetime.now().strftime('%Y-%m-%d') 
     # Print confirmation
-    print("\nComplete the following purchase?")
+    os.system('clear')
+    print("Complete the following purchase?")
     print("User: " + CurrentUser)
     print("Amount spent: " + str(amount))
     print("Number of items purchased: " + str(count))
@@ -100,20 +112,24 @@ def addPurchase():
     print("Date: " + date)
     print("New budget balance: " + str(TempBudget))
     #Get confirmation input
-    confirmation = input("\nPlease confirm the purchase by entering YES (all caps)\n> ")
+    confirmation = input("Please confirm the purchase by entering YES (all caps)\n> ")
     if confirmation == 'YES':
         BudgetTotal = TempBudget
         #add new purchase to end of purchase database as PurchaseObj
         PurchaseDatabase[len(PurchaseDatabase)] = PurchaseObj(CurrentUser, amount, item, count, purpose, date) 
+        os.system('clear')
+        print("Purchase Successful\n")
+        main()
     else:
-        print('Purchase Cancelled')
+        os.system('clear')
+        print('Purchase Cancelled\n')
         main() # if YES not entered, cancel purchase and return to main
-    main()
         
 
 def printDatabase():
     global PurchaseDatabase
     DatabaseTable = [] #List that PurhaseDatabase will be sorted into, and printed with Tableprint
+    os.system('clear')
     print('1: User')
     print('2: Price')
     print('3: Item Name')
@@ -125,6 +141,7 @@ def printDatabase():
         DirectionChoice = True
     else:
         DirectionChoice = False
+    os.system('clear')
     for k, v in PurchaseDatabase.items():
         DatabaseTable.append([str(v.user), str(v.amount), str(v.item), str(v.purpose), str(v.count), str(v.date)]) #Add each object in PurchaseDatabase as list
         if SortChoice != '5':
@@ -138,7 +155,7 @@ def printDatabase():
     main() #Return to main
 
 def main():
-    # Simple menu system, redirecting to different functions
+    # Simple menu systemtem, redirecting to different functions
     print("Current Budget Balance: " + str(BudgetTotal))
     print("Current User: " + CurrentUser)
     print("Current Permissions: " + str(CurrentPermissions))
@@ -152,19 +169,26 @@ def main():
         if CurrentPermissions >= 1:
             printDatabase()
         else:
+            os.system('clear')
             print('Insufficent Permissions')
+            main()
     if str(MenuChoice) == '2':
         if CurrentPermissions >= 2:
             addPurchase()
         else:
+            os.system('clear')
             print('Insufficent Permissions')
+            main()
     if str(MenuChoice) == '3':
         if CurrentPermissions >= 3:
             AddUser()
         else:
+            os.system('clear')
             print('Insufficent Permissions')
+            main()
     if str(MenuChoice) == '4':
         ChangeUser()
     else:
         main()
+os.system('clear')
 main()
