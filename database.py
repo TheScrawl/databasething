@@ -4,10 +4,9 @@ import TablePrint
 from operator import itemgetter
 from passlib.hash import pbkdf2_sha256
 BudgetTotal = 100
-CurrentUser = "admin"
-CurrentPermissions = 3
+CurrentPermissions = 4
 PurchaseDatabase = {}
-UserDatabase = {}
+
 
 # Purcase Object class, this will be used to define purchases
 class PurchaseObj: 
@@ -15,7 +14,8 @@ class PurchaseObj:
         self.user = user
         self.amount = amount
         self.item = item
-        self.count = count self.purpose = purpose
+        self.count = count 
+        self.purpose = purpose
         self.date = date
     def printObj(self):
         print(self.user)
@@ -33,22 +33,27 @@ class user:
         self.password = password
         self.permissions = permissions
 
+admin =  user("admin", pbkdf2_sha256.hash("password"), 4)
+UserDatabase = {0: admin,}
+CurrentUser = "admin"
+
 def AddUser():
+    global UserDatabase 
     tmpPerms = None
     tmpName = None
     tmpPass = None
     # get temp vars to use for user generation
     tmpPerms = input('What permission level would you like?: ') 
     try:
-    if int(tmpPerms) not in [0, 1, 2, 3]
-        print("Permissions must be 0, 1, 2 or 3")
-        AddUser():
+        if int(tmpPerms) not in [0, 1, 2, 3]:
+            print("Permissions must be 0, 1, 2 or 3")
+            AddUser()
     except ValueError:
         print("Permissions must be 0, 1, 2 or 3")
-        AddUser():
+        AddUser()
     tmpPerms = int(tmpPerms)
     tmpName = input('Enter Username: ')
-    for k, v in UserDatabase:
+    for k, v in UserDatabase.items():
         if v.name == tmpName:
             print("user under that name already exists, returning to main menu")
             main()
@@ -62,13 +67,19 @@ def AddUser():
         AddUser()
 
 def ChangeUser():
+    global CurrentUser, CurrentPermissions, UserDatabase
     tmpUser = input('What user would you like to log in: ')
-    for k, v in UserDatabase:
+    for k, v in UserDatabase.items():
         if v.name == tmpUser: #Make sure user exists
-            if pbkdf2_sha256.verify(input('Please enter the password: ')) == True: #check password
+            if pbkdf2_sha256.verify(input('Please enter the password: '), v.password) == True: #check password
                     CurrentUser = v.name #Change current user to new user
                     CurrentPermissions = v.permissions
                     print('User changed successfully')
+                    main()
+            else:
+                print('Incorrect Password')
+                ChangeUser()
+    print("User does not exist")
 
 def addPurchase():
     global BudgetTotal, CurrentUser, PurchaseDatabase
@@ -129,6 +140,8 @@ def printDatabase():
 def main():
     # Simple menu system, redirecting to different functions
     print("Current Budget Balance: " + str(BudgetTotal))
+    print("Current User: " + CurrentUser)
+    print("Current Permissions: " + str(CurrentPermissions))
     print("What would you like to do?")
     print("1: View Database")
     print("2: Add a new purchase")
@@ -136,20 +149,20 @@ def main():
     print('4: Change User')
     MenuChoice = input('> ')
     if str(MenuChoice) == '1':
-        if CurrentPermissions => 1:
+        if CurrentPermissions >= 1:
             printDatabase()
         else:
             print('Insufficent Permissions')
     if str(MenuChoice) == '2':
-        if CurrentPermissions => 2:
+        if CurrentPermissions >= 2:
             addPurchase()
         else:
             print('Insufficent Permissions')
     if str(MenuChoice) == '3':
-            if CurrentPermissions => 3:
+        if CurrentPermissions >= 3:
+            AddUser()
         else:
             print('Insufficent Permissions')
-         AddUser()
     if str(MenuChoice) == '4':
         ChangeUser()
     else:
