@@ -4,6 +4,7 @@ import TablePrint
 from operator import itemgetter
 from passlib.hash import pbkdf2_sha256
 import os
+import csv
 BudgetTotal = 100
 CurrentPermissions = 4
 PurchaseDatabase = {}
@@ -128,7 +129,7 @@ def addPurchase():
 
 def printDatabase():
     global PurchaseDatabase
-    DatabaseTable = [] #List that PurhaseDatabase will be sorted into, and printed with Tableprint
+    DatabaseTable = [] #List that PurchaseDatabase will be sorted into, and printed with Tableprint
     os.system('clear')
     print('1: User')
     print('2: Price')
@@ -154,7 +155,23 @@ def printDatabase():
     print('')
     main() #Return to main
 
+def ExportData(location):
+    if os.path.exists(location): 
+        os.remove(location) 
+    with open(str(location), 'a',) as csvfile:
+        writer = csv.writer(csvfile)
+        for k, v in PurchaseDatabase.items():
+            writer.writerow([k, v.user, v.amount, v.item, v.count, v.purpose, v.date])
+    csvfile.close()
+
+def ImportData(location):
+    with open(str(location)) as csvfile:
+        reader = csv.reader(csvfile)
+        for row in reader:
+            PurchaseDatabase[len(PurchaseDatabase)] = PurchaseObj(row[1], row[2], row[3], row[4], row[5], row[6])
+
 def main():
+    ExportData('exported_data.csv')
     # Simple menu systemtem, redirecting to different functions
     print("Current Budget Balance: " + str(BudgetTotal))
     print("Current User: " + CurrentUser)
@@ -191,4 +208,5 @@ def main():
     else:
         main()
 os.system('clear')
+ImportData('exported_data.csv')
 main()
